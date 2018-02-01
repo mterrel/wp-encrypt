@@ -24,11 +24,12 @@ if ( ! class_exists( 'WPENC\Core\Client' ) ) {
 	 */
 	final class Client {
 		/**
-		 * The API URL for Let's Encrypt.
+		 * The API URL and staging API URL for Let's Encrypt.
 		 *
 		 * @since 1.0.0
 		 */
 		const API_URL = 'https://acme-v01.api.letsencrypt.org';
+		const STAGING_URL = 'https://acme-staging.api.letsencrypt.org';
 
 		/**
 		 * The API endpoint to register an account.
@@ -399,7 +400,12 @@ if ( ! class_exists( 'WPENC\Core\Client' ) ) {
 
 			$url = $endpoint;
 			if ( false === strpos( $url, 'http://' ) && false === strpos( $url, 'https://' ) ) {
-				$url = self::API_URL . '/' . ltrim( $endpoint, '/' );
+				if ( defined( 'WP_ENCRYPT_STAGING' ) ) {
+					$base = self::STAGING_URL;
+				} else {
+					$base = self::API_URL;
+				}
+				$url = $base . '/' . ltrim( $endpoint, '/' );
 			}
 
 			$response = wp_remote_request( $url, $args );

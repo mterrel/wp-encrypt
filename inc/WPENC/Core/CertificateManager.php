@@ -78,10 +78,12 @@ if ( ! class_exists( 'WPENC\Core\CertificateManager' ) ) {
 			if ( is_wp_error( $response ) ) {
 				return $response;
 			}
+			$http_code = absint( Client::get()->get_last_code() );
 
-			if ( isset( $response['status'] ) && 200 !== absint( $response['status'] ) ) {
+			if ( isset( $response['status'] ) &&
+				( $http_code < 200 || $http_code > 202 ) ) {
 				$data = '';
-				if ( 409 === absint( $response['status'] ) ) {
+				if ( 409 === $http_code ) {
 					$data = $this->get_account( Client::get()->get_last_location() );
 					if ( is_wp_error( $data ) ) {
 						$data = '';
